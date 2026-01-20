@@ -35,7 +35,42 @@ export async function POST(req: Request) {
         });
     }
 
-    // 2. Save User Message
+    // 2. Fetch User Profile for Context
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('current_role, years_of_experience, summary')
+        .eq('id', user.id)
+        .single()
+
+    const { data: skills } = await supabase
+        .from('user_skills')
+        .select('skill_name, skill_category, proficiency_level')
+        .eq('user_id', user.id)
+        .order('proficiency_level', { ascending: false })
+        .limit(10)
+
+    // Build context message
+    let userContext = "You are an AI Career Mentor assistant."
+
+    if (profile?.current_role || profile?.years_of_experience) {
+        userContext += `\n\nUser Profile:`
+        if (profile.current_role) userContext += `\n- Current Role: ${profile.current_role}`
+        if (profile.years_of_experience) userContext += `\n- Years of Experience: ${profile.years_of_experience}`
+        if (profile.summary) userContext += `\n- Summary: ${profile.summary}`
+    }
+
+    if (skills && skills.length > 0) {
+        const techSkills = skills.filter(s => s.skill_category === 'technical').map(s => s.skill_name).join(', ')
+        const frameworks = skills.filter(s => s.skill_category === 'framework').map(s => s.skill_name).join(', ')
+
+        userContext += `\n\nUser Skills:`
+        if (techSkills) userContext += `\n- Technical: ${techSkills}`
+        if (frameworks) userContext += `\n- Frameworks: ${frameworks}`
+    }
+
+    userContext += `\n\nProvide personalized career guidance based on this profile. Be specific and actionable.`
+
+    // 3. Save User Message
     const lastMessage = messages[messages.length - 1];
     await supabase.from('messages').insert({
         chat_id: chatId,
@@ -43,9 +78,10 @@ export async function POST(req: Request) {
         content: lastMessage.content
     });
 
-    // 3. Stream & Save Assistant Message
+    // 4. Stream AI response
     const result = await streamText({
-        model: google('models/gemini-2.5-flash'),
+        model: google('models/gemini-1.5-flash'),
+        system: userContext,
         messages,
         onFinish: async ({ text }) => {
             await supabase.from('messages').insert({

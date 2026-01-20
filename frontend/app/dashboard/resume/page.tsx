@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Upload, FileText, Loader2 } from 'lucide-react'
+import { Upload, FileText, Loader2, ArrowLeft, Home } from 'lucide-react'
 
 type AnalysisResult = {
     score: number
@@ -78,7 +79,17 @@ export default function ResumeAnalyzerPage() {
 
     return (
         <div className="container mx-auto p-6 max-w-4xl">
-            <h1 className="text-3xl font-bold mb-6">Resume Analyzer</h1>
+            <div className="mb-6">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                    <Link href="/dashboard" className="hover:text-foreground flex items-center gap-1">
+                        <Home className="w-4 h-4" />
+                        Dashboard
+                    </Link>
+                    <span>/</span>
+                    <span className="text-foreground">Resume Analyzer</span>
+                </div>
+                <h1 className="text-3xl font-bold">Resume Analyzer</h1>
+            </div>
 
             <Card className="mb-6">
                 <CardHeader>
