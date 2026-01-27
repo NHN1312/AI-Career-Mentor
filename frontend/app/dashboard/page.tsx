@@ -83,10 +83,10 @@ export default function DashboardPage() {
                             <div className="p-2 bg-orange-500/10 rounded-lg">
                                 <TrendingUp className="w-6 h-6 text-orange-500" />
                             </div>
-                            <CardTitle>CV Improvement Studio</CardTitle>
+                            <CardTitle>AI CV Maker</CardTitle>
                         </div>
                         <CardDescription>
-                            Edit and improve your CV
+                            Create a professional CV with AI assistance
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -94,7 +94,7 @@ export default function DashboardPage() {
                             Edit CV sections with AI suggestions based on your analysis.
                         </p>
                         <Button asChild className="w-full" variant="outline">
-                            <Link href="/dashboard/cv-improve">Improve CV</Link>
+                            <Link href="/dashboard/cv-improve">Go to CV Maker</Link>
                         </Button>
                     </CardContent>
                 </Card>

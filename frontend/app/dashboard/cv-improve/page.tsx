@@ -8,16 +8,41 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Home, Loader2, FileText, Lightbulb, Download } from 'lucide-react'
+import pdfMake from 'pdfmake/build/pdfmake'
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+
+
 
 export default function CVImprovementPage() {
     const [loading, setLoading] = useState(true)
     const [weaknesses, setWeaknesses] = useState<string[]>([])
     const [suggestions, setSuggestions] = useState<string[]>([])
+    const [profileData, setProfileData] = useState<any>(null)
     const [cvData, setCvData] = useState({
         summary: '',
         skills: '',
         experience: '',
+        // New fields
+        fullName: '',
+        email: '',
+        phone: '',
+        address: '',
+        linkedin: '',
+        projects: '',
     })
+
+    useEffect(() => {
+        // Initialize pdfMake fonts on client side
+        // @ts-ignore
+        if (pdfFonts && pdfFonts.pdfMake) {
+            // @ts-ignore
+            pdfMake.vfs = pdfFonts.pdfMake.vfs
+        } else if (pdfFonts) {
+            // @ts-ignore
+            pdfMake.vfs = pdfFonts
+        }
+    }, [])
+
 
     useEffect(() => {
         fetchCVData()
@@ -29,13 +54,21 @@ export default function CVImprovementPage() {
             if (profileRes.ok) {
                 const profile = await profileRes.json()
 
-                // Load existing data
+                // Store full profile for PDF export
+                setProfileData(profile)
+
+                // Load existing data for editing
                 setCvData({
-                    summary: profile.profile?.summary || '',
-                    skills: profile.skills?.map((s: any) => s.skill_name).join(', ') || '',
-                    experience: profile.workExperience?.map((e: any) =>
-                        `${e.position} at ${e.company}\n${e.description || ''}`
-                    ).join('\n\n') || '',
+                    summary: profile.summary || '',
+                    skills: (profile.skills || []).map((s: any) => s.skill_name).join(', '),
+                    experience: (profile.work_experience || []).map((e: any) => `${e.position} at ${e.company}`).join('\n'),
+                    // Pre-fill defaults
+                    fullName: profile.profile?.full_name || profile.profile?.email?.split('@')[0]?.toUpperCase() || '',
+                    email: profile.profile?.email || '',
+                    phone: '',
+                    address: '',
+                    linkedin: '',
+                    projects: '',
                 })
 
                 // Get latest analysis for weaknesses and suggestions
@@ -57,6 +90,123 @@ export default function CVImprovementPage() {
         alert(`AI suggestion for ${field} coming soon!`)
     }
 
+    const handleDownloadPDF = () => {
+        try {
+            // Use edited data from cvData, fall back to defaults if empty (though cvData is pre-filled)
+            const name = cvData.fullName || profileData?.profile?.email?.split('@')[0]?.toUpperCase() || 'YOUR NAME'
+
+            // Construct contact info line parts
+            const contactParts = [
+                cvData.email,
+                cvData.phone,
+                cvData.address,
+                cvData.linkedin
+            ].filter(Boolean) // Remove empty strings
+
+            const contactLine = contactParts.join(' | ')
+
+            // Create pdfmake document definition (Harvard style)
+            const docDefinition: any = {
+                pageSize: 'A4',
+                pageMargins: [56, 56, 56, 56], // 20mm margins
+                defaultStyle: {
+                    font: 'Roboto', // Default font in vfs_fonts
+                    fontSize: 11,
+                    lineHeight: 1.4,
+                },
+                content: [
+                    // Header
+                    { text: name, style: 'name', alignment: 'center' },
+                    { text: contactLine, style: 'contact', alignment: 'center', margin: [0, 0, 0, 20] },
+
+                    // Summary
+                    ...(cvData.summary ? [
+                        { text: 'SUMMARY', style: 'sectionTitle' },
+                        { text: cvData.summary, margin: [0, 0, 0, 18] },
+                    ] : []),
+
+                    // Education
+                    ...(profileData?.education?.length > 0 ? [
+                        { text: 'EDUCATION', style: 'sectionTitle' },
+                        ...profileData.education.map((edu: any) => ({
+                            stack: [
+                                {
+                                    columns: [
+                                        { text: edu.degree, bold: true },
+                                        { text: `${edu.start_date || ''} - ${edu.end_date || 'Present'}`, italics: true, fontSize: 10, alignment: 'right' },
+                                    ],
+                                },
+                                { text: edu.institution, italics: true, margin: [0, 2, 0, 0] },
+                                ...(edu.field_of_study ? [{ text: `Field: ${edu.field_of_study}`, margin: [0, 2, 0, 0] }] : []),
+                            ],
+                            margin: [0, 0, 0, 10],
+                        })),
+                        { text: '', margin: [0, 0, 0, 8] },
+                    ] : []),
+
+                    // Work Experience (use cvData.experience if edited, but parsing text back to structured is hard.
+                    // For now, we using the profileData for structure, but cvData.experience is just a text block in simple mode.
+                    // IMPORTANT: The user asked to EDIT experience. The current UI has a Textarea for experience (cvData.experience).
+                    // But the PDF generation code below uses profileData.workExperience (structured).
+                    // This causes a disconnect: user edits text in textarea, but PDF uses old structured data.
+                    // FIX: If cvData.experience is modified and is a string, we should probably output it as a block of text
+                    // OR we parse it. Parsing is hard.
+                    // SIMPLE FIX: Check if cvData.experience has content. If so, use it as a text block (like Summary).
+                    // If it's a textarea, it's unstructured.
+                    // However, to keep high quality formatting, we usually want structured.
+                    // But the prompt asked "muốn thêm project... hoặc đơn giản là thêm project".
+                    // For Experience, sticking to profileData is inconsistent if they edit the textarea.
+                    // DECISION: If cvData.experience is present, use it as the source. 
+                    // But wait, the original code initialized cvData.experience from profileData by joining fields.
+                    // So cvData.experience IS the editable version. We should use it.
+                    // Replaced structured loop with simple text block to respect edits.
+                    ...(cvData.experience ? [
+                        { text: 'EXPERIENCE', style: 'sectionTitle' },
+                        { text: cvData.experience, margin: [0, 0, 0, 18], whiteSpace: 'pre-wrap' }, // Preserve newlines
+                    ] : []),
+
+                    // Projects (New Section)
+                    ...(cvData.projects ? [
+                        { text: 'PROJECTS', style: 'sectionTitle' },
+                        { text: cvData.projects, margin: [0, 0, 0, 18], whiteSpace: 'pre-wrap' },
+                    ] : []),
+
+                    // Skills (Use cvData.skills to respect edits)
+                    ...(cvData.skills ? [
+                        { text: 'SKILLS', style: 'sectionTitle' },
+                        { text: cvData.skills, lineHeight: 1.6, margin: [0, 0, 0, 18] },
+                    ] : []),
+
+                    // Certifications
+                    ...(profileData?.certifications?.length > 0 ? [
+                        { text: 'CERTIFICATIONS', style: 'sectionTitle' },
+                        ...profileData.certifications.map((cert: any) => ({
+                            text: [
+                                { text: cert.certification_name, bold: true },
+                                cert.issuing_organization ? ` - ${cert.issuing_organization}` : '',
+                                cert.issue_date ? ` (${cert.issue_date})` : '',
+                            ],
+                            margin: [0, 0, 0, 5],
+                        })),
+                    ] : []),
+                ],
+                styles: {
+                    name: { fontSize: 18, bold: true, margin: [0, 0, 0, 5] },
+                    contact: { fontSize: 10 },
+                    sectionTitle: { fontSize: 12, bold: true, decoration: 'underline', margin: [0, 0, 0, 8] },
+                },
+            }
+
+            // Generate and download PDF
+            const filename = `cv_${name.replace(/\s+/g, '_').toLowerCase()}.pdf`
+            pdfMake.createPdf(docDefinition).download(filename)
+        } catch (error) {
+            console.error('PDF download error:', error)
+            alert('Failed to generate PDF. Please try again.')
+        }
+    }
+
+
     if (loading) {
         return (
             <div className="container mx-auto p-6 flex items-center justify-center min-h-[400px]">
@@ -74,17 +224,74 @@ export default function CVImprovementPage() {
                         Dashboard
                     </Link>
                     <span>/</span>
-                    <span className="text-foreground">CV Improvement Studio</span>
+                    <span className="text-foreground">AI CV Maker</span>
                 </div>
-                <h1 className="text-3xl font-bold">CV Improvement Studio</h1>
+                <h1 className="text-3xl font-bold">AI CV Maker</h1>
                 <p className="text-muted-foreground mt-2">
-                    Improve your CV based on AI analysis and suggestions
+                    Create and improve your CV based on AI analysis and suggestions
                 </p>
             </div>
 
             <div className="grid lg:grid-cols-3 gap-6">
                 {/* Main Editor */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="md:col-span-2 space-y-6">
+                    {/* Personal Information */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Personal Information</CardTitle>
+                            <CardDescription>
+                                Verify or update your contact details for the CV header.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="fullName">Full Name</Label>
+                                <Input
+                                    id="fullName"
+                                    value={cvData.fullName}
+                                    onChange={(e) => setCvData({ ...cvData, fullName: e.target.value })}
+                                    placeholder="John Doe"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    value={cvData.email}
+                                    onChange={(e) => setCvData({ ...cvData, email: e.target.value })}
+                                    placeholder="john@example.com"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="phone">Phone (Optional)</Label>
+                                <Input
+                                    id="phone"
+                                    value={cvData.phone}
+                                    onChange={(e) => setCvData({ ...cvData, phone: e.target.value })}
+                                    placeholder="+1 234 567 890"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="address">Address (Optional)</Label>
+                                <Input
+                                    id="address"
+                                    value={cvData.address}
+                                    onChange={(e) => setCvData({ ...cvData, address: e.target.value })}
+                                    placeholder="New York, NY"
+                                />
+                            </div>
+                            <div className="md:col-span-2 space-y-2">
+                                <Label htmlFor="linkedin">LinkedIn URL (Optional)</Label>
+                                <Input
+                                    id="linkedin"
+                                    value={cvData.linkedin}
+                                    onChange={(e) => setCvData({ ...cvData, linkedin: e.target.value })}
+                                    placeholder="linkedin.com/in/johndoe"
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     {/* Professional Summary */}
                     <Card>
                         <CardHeader>
@@ -160,9 +367,33 @@ export default function CVImprovementPage() {
                         </CardContent>
                     </Card>
 
-                    <Button className="w-full" size="lg">
+                    {/* Projects */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Projects</CardTitle>
+                            <CardDescription>
+                                Add significant projects (e.g., Project Name: Description, tech stack).
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Textarea
+                                className="min-h-[120px] font-mono text-sm"
+                                value={cvData.projects}
+                                onChange={(e) => setCvData({ ...cvData, projects: e.target.value })}
+                                placeholder="Project Name: Description of the project, technologies used, and your role..."
+                            />
+                        </CardContent>
+                    </Card>
+
+                    {/* Export Button */}
+                    <Button
+                        className="w-full"
+                        size="lg"
+                        onClick={handleDownloadPDF}
+                        disabled={!profileData}
+                    >
                         <Download className="w-4 h-4 mr-2" />
-                        Export CV (Coming Soon)
+                        Export CV
                     </Button>
                 </div>
 
@@ -215,6 +446,8 @@ export default function CVImprovementPage() {
                     </Card>
                 </div>
             </div>
+
+
         </div>
     )
 }
