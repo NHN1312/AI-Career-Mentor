@@ -20,7 +20,12 @@ type AnalysisResult = {
     timeEstimate: string
 }
 
+import { useLocale, useTranslations } from 'next-intl'
+
 export default function SkillGapPage() {
+    const t = useTranslations('SkillGap')
+    const tNav = useTranslations('Navbar')
+    const locale = useLocale()
     const [targetRole, setTargetRole] = useState('')
     const [currentSkills, setCurrentSkills] = useState('')
     const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -72,7 +77,7 @@ export default function SkillGapPage() {
             const response = await fetch('/api/skill-gap/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ targetRole, currentSkills }),
+                body: JSON.stringify({ targetRole, currentSkills, locale }),
             })
 
             if (!response.ok) throw new Error('Analysis failed')
@@ -92,32 +97,32 @@ export default function SkillGapPage() {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                     <Link href="/dashboard" className="hover:text-foreground flex items-center gap-1">
                         <Home className="w-4 h-4" />
-                        Dashboard
+                        {tNav('dashboard')}
                     </Link>
                     <span>/</span>
-                    <span className="text-foreground">Skill Gap Analysis</span>
+                    <span className="text-foreground">{t('nav')}</span>
                 </div>
-                <h1 className="text-3xl font-bold">Skill Gap Analysis</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
             </div>
 
             <Card className="mb-6">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Target className="w-5 h-5" />
-                        Analyze Your Skills
+                        {t('cardTitle')}
                     </CardTitle>
                     <CardDescription>
                         {loadingProfile
-                            ? 'Loading your profile...'
-                            : 'Your skills have been auto-filled from your CV. Enter your target role to analyze.'}
+                            ? t('loadingProfile')
+                            : t('cardDesc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="targetRole">Target Role</Label>
+                        <Label htmlFor="targetRole">{t('targetRole')}</Label>
                         <Input
                             id="targetRole"
-                            placeholder="e.g., Senior Software Engineer, Data Scientist"
+                            placeholder={t('targetRolePlaceholder')}
                             value={targetRole}
                             onChange={(e) => setTargetRole(e.target.value)}
                             disabled={isAnalyzing}
@@ -125,10 +130,10 @@ export default function SkillGapPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="currentSkills">Current Skills</Label>
+                        <Label htmlFor="currentSkills">{t('currentSkills')}</Label>
                         <Textarea
                             id="currentSkills"
-                            placeholder="List your current skills, experience, and expertise..."
+                            placeholder={t('currentSkillsPlaceholder')}
                             value={currentSkills}
                             onChange={(e) => setCurrentSkills(e.target.value)}
                             disabled={isAnalyzing || loadingProfile}
@@ -142,10 +147,10 @@ export default function SkillGapPage() {
                         {isAnalyzing ? (
                             <>
                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Analyzing...
+                                {t('analyzing')}
                             </>
                         ) : (
-                            'Analyze Skill Gap'
+                            t('analyze')
                         )}
                     </Button>
                 </CardContent>
@@ -155,7 +160,7 @@ export default function SkillGapPage() {
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Current Level Assessment</CardTitle>
+                            <CardTitle>{t('currentLevel')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <p>{result.currentLevel}</p>
@@ -164,7 +169,7 @@ export default function SkillGapPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-orange-600">Missing Skills</CardTitle>
+                            <CardTitle className="text-orange-600">{t('missingSkills')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ul className="list-disc list-inside space-y-2">
@@ -177,7 +182,7 @@ export default function SkillGapPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-green-600">Learning Roadmap</CardTitle>
+                            <CardTitle className="text-green-600">{t('roadmap')}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {result.learningRoadmap.map((item, i) => (
@@ -196,7 +201,7 @@ export default function SkillGapPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Estimated Learning Time</CardTitle>
+                            <CardTitle>{t('timeEstimate')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <p className="text-2xl font-bold text-primary">{result.timeEstimate}</p>

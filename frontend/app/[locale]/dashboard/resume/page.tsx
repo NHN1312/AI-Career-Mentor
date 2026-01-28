@@ -14,7 +14,13 @@ type AnalysisResult = {
     keywords: string[]
 }
 
+import { useLocale, useTranslations } from 'next-intl'
+
 export default function ResumeAnalyzerPage() {
+
+    const t = useTranslations('Resume')
+    const tNav = useTranslations('Navbar')
+    const locale = useLocale()
     const [file, setFile] = useState<File | null>(null)
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [result, setResult] = useState<AnalysisResult | null>(null)
@@ -60,6 +66,7 @@ export default function ResumeAnalyzerPage() {
         try {
             const formData = new FormData()
             formData.append('file', file)
+            formData.append('locale', locale)
 
             const response = await fetch('/api/resume/analyze', {
                 method: 'POST',
@@ -83,19 +90,19 @@ export default function ResumeAnalyzerPage() {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                     <Link href="/dashboard" className="hover:text-foreground flex items-center gap-1">
                         <Home className="w-4 h-4" />
-                        Dashboard
+                        {tNav('dashboard')}
                     </Link>
                     <span>/</span>
-                    <span className="text-foreground">Resume Analyzer</span>
+                    <span className="text-foreground">{t('nav')}</span>
                 </div>
-                <h1 className="text-3xl font-bold">Resume Analyzer</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
             </div>
 
             <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle>Upload Your Resume</CardTitle>
+                    <CardTitle>{t('uploadTitle')}</CardTitle>
                     <CardDescription>
-                        Supported formats: PDF, DOCX, TXT, JPG, PNG, WebP (max 10MB)
+                        {t('supportedFormats')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -123,11 +130,11 @@ export default function ResumeAnalyzerPage() {
                                                 Analyzing...
                                             </>
                                         ) : (
-                                            'Analyze Resume'
+                                            t('analyze')
                                         )}
                                     </Button>
                                     <Button variant="outline" onClick={() => setFile(null)}>
-                                        Remove
+                                        {t('remove')}
                                     </Button>
                                 </div>
                             </div>
@@ -135,12 +142,12 @@ export default function ResumeAnalyzerPage() {
                             <div className="space-y-4">
                                 <Upload className="w-12 h-12 mx-auto text-muted-foreground" />
                                 <div>
-                                    <p className="text-lg font-medium">Drag & drop your resume here</p>
-                                    <p className="text-sm text-muted-foreground">or</p>
+                                    <p className="text-lg font-medium">{t('dragDrop')}</p>
+                                    <p className="text-sm text-muted-foreground">{t('or')}</p>
                                 </div>
                                 <Button asChild>
                                     <label className="cursor-pointer">
-                                        Browse Files
+                                        {t('browse')}
                                         <input
                                             type="file"
                                             className="hidden"
@@ -163,7 +170,7 @@ export default function ResumeAnalyzerPage() {
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Overall Score</CardTitle>
+                            <CardTitle>{t('score')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-6xl font-bold text-primary">{result.score}/100</div>
@@ -172,7 +179,7 @@ export default function ResumeAnalyzerPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-green-600">Strengths</CardTitle>
+                            <CardTitle className="text-green-600">{t('strengths')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ul className="list-disc list-inside space-y-2">
@@ -185,7 +192,7 @@ export default function ResumeAnalyzerPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-orange-600">Areas for Improvement</CardTitle>
+                            <CardTitle className="text-orange-600">{t('improvements')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ul className="list-disc list-inside space-y-2">
@@ -198,7 +205,7 @@ export default function ResumeAnalyzerPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Improvement Suggestions</CardTitle>
+                            <CardTitle>{t('suggestions')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ul className="list-disc list-inside space-y-2">
@@ -212,7 +219,7 @@ export default function ResumeAnalyzerPage() {
                     {result.keywords.length > 0 && (
                         <Card>
                             <CardHeader>
-                                <CardTitle>Missing Keywords</CardTitle>
+                                <CardTitle>{t('missingKeywords')}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="flex flex-wrap gap-2">

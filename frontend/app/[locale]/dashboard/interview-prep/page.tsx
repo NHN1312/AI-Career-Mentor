@@ -1,13 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Home, Loader2, MessageCircle } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 type InterviewFeedback = {
     question: string
@@ -19,7 +28,10 @@ type InterviewFeedback = {
 }
 
 export default function InterviewPrepPage() {
+    const t = useTranslations('Interview')
+    const locale = useLocale()
     const [role, setRole] = useState('')
+    const [seniority, setSeniority] = useState('mid-level')
     const [question, setQuestion] = useState('')
     const [answer, setAnswer] = useState('')
     const [isGeneratingQuestion, setIsGeneratingQuestion] = useState(false)
@@ -29,7 +41,7 @@ export default function InterviewPrepPage() {
 
     const handleGenerateQuestion = async () => {
         if (!role.trim()) {
-            setError('Please enter a role')
+            setError(t('errorRole'))
             return
         }
 
@@ -40,7 +52,7 @@ export default function InterviewPrepPage() {
             const response = await fetch('/api/interview-prep/question', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ role }),
+                body: JSON.stringify({ role, seniority, locale }),
             })
 
             if (!response.ok) throw new Error('Failed to generate question')
@@ -58,7 +70,7 @@ export default function InterviewPrepPage() {
 
     const handleAnalyzeAnswer = async () => {
         if (!answer.trim()) {
-            setError('Please provide your answer')
+            setError(t('errorAnswer'))
             return
         }
 
@@ -69,7 +81,7 @@ export default function InterviewPrepPage() {
             const response = await fetch('/api/interview-prep/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question, answer, role }),
+                body: JSON.stringify({ question, answer, role, seniority, locale }),
             })
 
             if (!response.ok) throw new Error('Analysis failed')
@@ -89,61 +101,89 @@ export default function InterviewPrepPage() {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                     <Link href="/dashboard" className="hover:text-foreground flex items-center gap-1">
                         <Home className="w-4 h-4" />
-                        Dashboard
+                        {t('dashboard')}
                     </Link>
                     <span>/</span>
-                    <span className="text-foreground">Interview Prep</span>
+                    <span className="text-foreground">{t('prep')}</span>
                 </div>
-                <h1 className="text-3xl font-bold">Interview Preparation</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
             </div>
 
             <Card className="mb-6">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <MessageCircle className="w-5 h-5" />
-                        Practice Interview Questions
+                        {t('cardTitle')}
                     </CardTitle>
                     <CardDescription>
-                        Get AI-generated questions and feedback on your answers
+                        {t('cardDesc')}
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <Label htmlFor="role">Target Role</Label>
-                        <div className="flex gap-2">
+                <CardContent className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="role">{t('targetRole')}</Label>
                             <Input
                                 id="role"
-                                placeholder="e.g., Software Engineer, Product Manager"
+                                placeholder={t('rolePlaceholder')}
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
                                 disabled={isGeneratingQuestion}
                             />
-                            <Button onClick={handleGenerateQuestion} disabled={isGeneratingQuestion}>
-                                {isGeneratingQuestion ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    'Generate Question'
-                                )}
-                            </Button>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="seniority">{t('seniority')}</Label>
+                            <Select
+                                value={seniority}
+                                onValueChange={setSeniority}
+                                disabled={isGeneratingQuestion}
+                            >
+                                <SelectTrigger id="seniority">
+                                    <SelectValue placeholder={t('selectLevel')} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="intern">{t('levels.intern')}</SelectItem>
+                                    <SelectItem value="junior">{t('levels.junior')}</SelectItem>
+                                    <SelectItem value="mid-level">{t('levels.mid-level')}</SelectItem>
+                                    <SelectItem value="senior">{t('levels.senior')}</SelectItem>
+                                    <SelectItem value="lead">{t('levels.lead')}</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
+
+                    <Button
+                        onClick={handleGenerateQuestion}
+                        disabled={isGeneratingQuestion}
+                        className="w-full md:w-auto"
+                    >
+                        {isGeneratingQuestion ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                {t('generating')}
+                            </>
+                        ) : (
+                            t('generate')
+                        )}
+                    </Button>
 
                     {question && (
                         <>
                             <Card className="bg-muted">
                                 <CardHeader>
-                                    <CardTitle className="text-base">Interview Question</CardTitle>
+                                    <CardTitle className="text-base">{t('questionTitle')}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <p className="text-lg">{question}</p>
                                 </CardContent>
                             </Card>
 
-                            <div>
-                                <Label htmlFor="answer">Your Answer</Label>
+                            <div className="grid gap-2">
+                                <Label htmlFor="answer">{t('yourAnswer')}</Label>
                                 <Textarea
                                     id="answer"
-                                    placeholder="Type your answer here..."
+                                    placeholder={t('answerPlaceholder')}
                                     value={answer}
                                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAnswer(e.target.value)}
                                     disabled={isAnalyzing}
@@ -155,10 +195,10 @@ export default function InterviewPrepPage() {
                                 {isAnalyzing ? (
                                     <>
                                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        Analyzing...
+                                        {t('analyzing')}
                                     </>
                                 ) : (
-                                    'Get Feedback'
+                                    t('analyze')
                                 )}
                             </Button>
                         </>
@@ -172,7 +212,7 @@ export default function InterviewPrepPage() {
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Overall Score</CardTitle>
+                            <CardTitle>{t('overallScore')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="flex items-center gap-4">
@@ -191,7 +231,7 @@ export default function InterviewPrepPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-green-600">Strengths</CardTitle>
+                            <CardTitle className="text-green-600">{t('strengths')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ul className="list-disc list-inside space-y-2">
@@ -204,7 +244,7 @@ export default function InterviewPrepPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-orange-600">Areas for Improvement</CardTitle>
+                            <CardTitle className="text-orange-600">{t('improvements')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ul className="list-disc list-inside space-y-2">
@@ -217,7 +257,7 @@ export default function InterviewPrepPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Better Answer Example</CardTitle>
+                            <CardTitle>{t('betterAnswer')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <p className="whitespace-pre-line">{feedback.betterAnswer}</p>
@@ -225,7 +265,7 @@ export default function InterviewPrepPage() {
                     </Card>
 
                     <Button onClick={handleGenerateQuestion} className="w-full" variant="outline">
-                        Practice Another Question
+                        {t('practiceAnother')}
                     </Button>
                 </div>
             )}

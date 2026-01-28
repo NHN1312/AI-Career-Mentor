@@ -5,13 +5,31 @@ import { createClient } from '@/utils/supabase/server';
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-    const { messages, chatId } = await req.json();
-    const supabase = await createClient(); // Await the async server client creation if needed, or check implementation. 
-    // utils/supabase/server.ts usually exports a helper. Let's assume sync or async based on common patterns.
-    // Actually created server.ts uses `createServerClient`, which is sync? No, cookies methods are async in Next.js 15+ but here we are in 16.
-    // Let's check server.ts implementation again if I can. But standard pattern:
-
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+
+    let locale = 'en'; // Default
+
+    // We need to extract locale from the request if possible, but streamText accepts `messages`.
+    // Usually, we pass locale as a separate part of the body, but useChat sends strict body.
+    // We can infer locale from the last message or pass it via headers or data.
+    // For now, let's assume 'en' unless we can find a way to pass it.
+    // Better: Allow the client to send a system message with the language instruction?
+    // Or we can parse the request body which is handled by streamText...
+    // streamText usually takes `messages` directly.
+    // Let's rely on the frontend sending a 'system' message with language preference OR
+    // check if we can parse the request body before calling streamText?
+    // `req.json()` consumes the body.
+
+    // Workaround: The previous messages should theoretically contain the context if we append it.
+    // But for a cleaner implementation, we can wrap req.json() and then pass messages.
+
+    const body = await req.json();
+    const { messages, data, chatId } = body;
+    // Check if `data` contains locale? useChat allows sending extra `data`.
+
+    locale = (data && data.locale) ? data.locale : 'en';
+    const languageInstruction = locale === 'vi' ? 'Respond in Vietnamese (Tiếng Việt).' : 'Respond in English.';
 
     if (!user) {
         return new Response('Unauthorized', { status: 401 });
@@ -68,7 +86,12 @@ export async function POST(req: Request) {
         if (frameworks) userContext += `\n- Frameworks: ${frameworks}`
     }
 
-    userContext += `\n\nProvide personalized career guidance based on this profile. Be specific and actionable.`
+    userContext += `\n\nIMPORTANT INSTRUCTION: You have access to the user's profile and skills above. Use this information ONLY if the user explicitly asks for advice, career guidance, or questions related to their profile.
+    
+    If the user greets you (e.g., "Hello", "Hi", "Xin chào") or asks a general question unrelated to their specific profile, respond normally and briefly. DO NOT recite their profile back to them or give unsolicited career advice in the first message.
+    
+    When you DO provide advice, be specific, actionable, and use the profile data to tailor your response.`
+    userContext += `\n\n${languageInstruction}`;
 
     // 3. Save User Message
     const lastMessage = messages[messages.length - 1];
@@ -80,7 +103,7 @@ export async function POST(req: Request) {
 
     // 4. Stream AI response
     const result = await streamText({
-        model: google('models/gemini-1.5-flash'),
+        model: google('models/gemini-2.5-flash'),
         system: userContext,
         messages,
         onFinish: async ({ text }) => {

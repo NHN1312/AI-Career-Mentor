@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     try {
         const formData = await req.formData()
         const file = formData.get('file') as File
+        const locale = formData.get('locale') as string || 'en'
 
         if (!file) {
             return NextResponse.json({ error: 'No file provided' }, { status: 400 })
@@ -58,7 +59,7 @@ export async function POST(req: Request) {
                     role: 'user',
                     content: [
                         { type: 'image', image: `data:${fileType};base64,${base64Image}` },
-                        { type: 'text', text: getAnalysisPrompt() }
+                        { type: 'text', text: getAnalysisPrompt(locale) }
                     ],
                 }],
             })
@@ -78,7 +79,7 @@ export async function POST(req: Request) {
         if (resumeText) {
             const { text } = await generateText({
                 model: google('models/gemini-2.5-flash'),
-                prompt: getAnalysisPrompt() + `\n\nResume:\n${resumeText}`,
+                prompt: getAnalysisPrompt(locale) + `\n\nResume:\n${resumeText}`,
             })
 
             const analysis = parseAnalysisResponse(text)
@@ -97,7 +98,9 @@ export async function POST(req: Request) {
     }
 }
 
-function getAnalysisPrompt() {
+function getAnalysisPrompt(locale: string = 'en') {
+    const languageInstruction = locale === 'vi' ? 'Respond in Vietnamese (Tiếng Việt).' : 'Respond in English.';
+
     return `Analyze this resume and provide a detailed assessment in JSON format:
 
 {
@@ -109,6 +112,8 @@ function getAnalysisPrompt() {
 }
 
 Focus on professional presentation, relevant experience, skills, achievement quantification, and industry keywords.
+
+${languageInstruction}
 
 Return ONLY the JSON object, no markdown or other text.`
 }

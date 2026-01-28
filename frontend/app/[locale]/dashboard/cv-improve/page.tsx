@@ -13,7 +13,11 @@ import pdfFonts from 'pdfmake/build/vfs_fonts'
 
 
 
+import { useTranslations } from 'next-intl'
+
 export default function CVImprovementPage() {
+    const t = useTranslations('CVMaker')
+    const tNav = useTranslations('Navbar')
     const [loading, setLoading] = useState(true)
     const [weaknesses, setWeaknesses] = useState<string[]>([])
     const [suggestions, setSuggestions] = useState<string[]>([])
@@ -221,14 +225,14 @@ export default function CVImprovementPage() {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                     <Link href="/dashboard" className="hover:text-foreground flex items-center gap-1">
                         <Home className="w-4 h-4" />
-                        Dashboard
+                        {tNav('dashboard')}
                     </Link>
                     <span>/</span>
-                    <span className="text-foreground">AI CV Maker</span>
+                    <span className="text-foreground">{t('nav')}</span>
                 </div>
-                <h1 className="text-3xl font-bold">AI CV Maker</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Create and improve your CV based on AI analysis and suggestions
+                    {t('subtitle')}
                 </p>
             </div>
 
@@ -238,14 +242,14 @@ export default function CVImprovementPage() {
                     {/* Personal Information */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Personal Information</CardTitle>
+                            <CardTitle>{t('personalInfo')}</CardTitle>
                             <CardDescription>
-                                Verify or update your contact details for the CV header.
+                                {t('personalInfoDesc')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="fullName">Full Name</Label>
+                                <Label htmlFor="fullName">{t('fullName')}</Label>
                                 <Input
                                     id="fullName"
                                     value={cvData.fullName}
@@ -254,7 +258,7 @@ export default function CVImprovementPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">{t('email')}</Label>
                                 <Input
                                     id="email"
                                     value={cvData.email}
@@ -263,7 +267,7 @@ export default function CVImprovementPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="phone">Phone (Optional)</Label>
+                                <Label htmlFor="phone">{t('phone')}</Label>
                                 <Input
                                     id="phone"
                                     value={cvData.phone}
@@ -272,7 +276,7 @@ export default function CVImprovementPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="address">Address (Optional)</Label>
+                                <Label htmlFor="address">{t('address')}</Label>
                                 <Input
                                     id="address"
                                     value={cvData.address}
@@ -281,7 +285,7 @@ export default function CVImprovementPage() {
                                 />
                             </div>
                             <div className="md:col-span-2 space-y-2">
-                                <Label htmlFor="linkedin">LinkedIn URL (Optional)</Label>
+                                <Label htmlFor="linkedin">{t('linkedin')}</Label>
                                 <Input
                                     id="linkedin"
                                     value={cvData.linkedin}
@@ -296,14 +300,14 @@ export default function CVImprovementPage() {
                     <Card>
                         <CardHeader>
                             <div className="flex items-center justify-between">
-                                <CardTitle>Professional Summary</CardTitle>
+                                <CardTitle>{t('summary')}</CardTitle>
                                 <Button
                                     size="sm"
                                     variant="outline"
                                     onClick={() => handleGetAISuggestion('summary')}
                                 >
                                     <Lightbulb className="w-4 h-4 mr-2" />
-                                    AI Suggestion
+                                    {t('aiSuggestion')}
                                 </Button>
                             </div>
                         </CardHeader>
@@ -312,7 +316,7 @@ export default function CVImprovementPage() {
                                 value={cvData.summary}
                                 onChange={(e) => setCvData({ ...cvData, summary: e.target.value })}
                                 rows={6}
-                                placeholder="Write a compelling professional summary..."
+                                placeholder={t('summaryPlaceholder')}
                             />
                         </CardContent>
                     </Card>
@@ -321,14 +325,14 @@ export default function CVImprovementPage() {
                     <Card>
                         <CardHeader>
                             <div className="flex items-center justify-between">
-                                <CardTitle>Skills</CardTitle>
+                                <CardTitle>{t('skills')}</CardTitle>
                                 <Button
                                     size="sm"
                                     variant="outline"
                                     onClick={() => handleGetAISuggestion('skills')}
                                 >
                                     <Lightbulb className="w-4 h-4 mr-2" />
-                                    AI Suggestion
+                                    {t('aiSuggestion')}
                                 </Button>
                             </div>
                         </CardHeader>
@@ -337,7 +341,7 @@ export default function CVImprovementPage() {
                                 value={cvData.skills}
                                 onChange={(e) => setCvData({ ...cvData, skills: e.target.value })}
                                 rows={4}
-                                placeholder="List your skills..."
+                                placeholder={t('skillsPlaceholder')}
                             />
                         </CardContent>
                     </Card>
@@ -346,14 +350,14 @@ export default function CVImprovementPage() {
                     <Card>
                         <CardHeader>
                             <div className="flex items-center justify-between">
-                                <CardTitle>Work Experience</CardTitle>
+                                <CardTitle>{t('workExperience')}</CardTitle>
                                 <Button
                                     size="sm"
                                     variant="outline"
                                     onClick={() => handleGetAISuggestion('experience')}
                                 >
                                     <Lightbulb className="w-4 h-4 mr-2" />
-                                    AI Suggestion
+                                    {t('aiSuggestion')}
                                 </Button>
                             </div>
                         </CardHeader>
@@ -362,7 +366,7 @@ export default function CVImprovementPage() {
                                 value={cvData.experience}
                                 onChange={(e) => setCvData({ ...cvData, experience: e.target.value })}
                                 rows={12}
-                                placeholder="Describe your work experience with achievements and impact..."
+                                placeholder={t('experiencePlaceholder')}
                             />
                         </CardContent>
                     </Card>
@@ -370,9 +374,9 @@ export default function CVImprovementPage() {
                     {/* Projects */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Projects</CardTitle>
+                            <CardTitle>{t('projects')}</CardTitle>
                             <CardDescription>
-                                Add significant projects (e.g., Project Name: Description, tech stack).
+                                {t('projectPlaceholder')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -380,7 +384,7 @@ export default function CVImprovementPage() {
                                 className="min-h-[120px] font-mono text-sm"
                                 value={cvData.projects}
                                 onChange={(e) => setCvData({ ...cvData, projects: e.target.value })}
-                                placeholder="Project Name: Description of the project, technologies used, and your role..."
+                                placeholder={t('projectPlaceholder')}
                             />
                         </CardContent>
                     </Card>
@@ -393,7 +397,7 @@ export default function CVImprovementPage() {
                         disabled={!profileData}
                     >
                         <Download className="w-4 h-4 mr-2" />
-                        Export CV
+                        {t('export')}
                     </Button>
                 </div>
 
@@ -402,7 +406,7 @@ export default function CVImprovementPage() {
                     {/* Identified Weaknesses */}
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">⚠️ Areas to Improve</CardTitle>
+                            <CardTitle className="text-base">{t('areasToImprove')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             {weaknesses.length > 0 ? (
@@ -416,7 +420,7 @@ export default function CVImprovementPage() {
                                 </ul>
                             ) : (
                                 <p className="text-sm text-muted-foreground">
-                                    Upload a CV to see improvement areas
+                                    {t('noWeaknesses')}
                                 </p>
                             )}
                         </CardContent>
@@ -425,7 +429,7 @@ export default function CVImprovementPage() {
                     {/* AI Suggestions */}
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">💡 Suggestions</CardTitle>
+                            <CardTitle className="text-base">{t('suggestions')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             {suggestions.length > 0 ? (
@@ -439,7 +443,7 @@ export default function CVImprovementPage() {
                                 </ul>
                             ) : (
                                 <p className="text-sm text-muted-foreground">
-                                    No suggestions yet
+                                    {t('noSuggestions')}
                                 </p>
                             )}
                         </CardContent>

@@ -1,13 +1,18 @@
+'use client'
+
 import { ChatInterface } from "@/components/chat-interface"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { FileText, MessageSquare, Target, TrendingUp, MessageCircle } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 export default function DashboardPage() {
+    const t = useTranslations('Dashboard')
+
     return (
         <div className="p-8 max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+            <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {/* Chat Interface Card */}
@@ -17,17 +22,9 @@ export default function DashboardPage() {
                             <div className="p-2 bg-blue-500/10 rounded-lg">
                                 <MessageSquare className="w-6 h-6 text-blue-500" />
                             </div>
-                            <CardTitle>AI Career Chat</CardTitle>
+                            <CardTitle>{t('aiCareerChat')}</CardTitle>
                         </div>
-                        <CardDescription>
-                            Get personalized career advice
-                        </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Ask questions about your career path and get instant AI guidance.
-                        </p>
-                    </CardContent>
                 </Card>
 
                 {/* Resume Analyzer Card */}
@@ -37,18 +34,15 @@ export default function DashboardPage() {
                             <div className="p-2 bg-green-500/10 rounded-lg">
                                 <FileText className="w-6 h-6 text-green-500" />
                             </div>
-                            <CardTitle>Resume Analyzer</CardTitle>
+                            <CardTitle>{t('resumeAnalyzer')}</CardTitle>
                         </div>
                         <CardDescription>
-                            AI-powered CV optimization
+                            {t('resumeAnalyzerDesc')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Get detailed feedback with scores and improvement tips.
-                        </p>
                         <Button asChild className="w-full" variant="outline">
-                            <Link href="/dashboard/resume">Analyze Resume</Link>
+                            <Link href="/dashboard/resume">{t('analyzeResume')}</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -60,18 +54,15 @@ export default function DashboardPage() {
                             <div className="p-2 bg-purple-500/10 rounded-lg">
                                 <Target className="w-6 h-6 text-purple-500" />
                             </div>
-                            <CardTitle>Skill Gap Analysis</CardTitle>
+                            <CardTitle>{t('skillGapAnalysis')}</CardTitle>
                         </div>
                         <CardDescription>
-                            Identify missing skills
+                            {t('skillGapAnalysisDesc')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Compare your skills with target roles and get a learning roadmap.
-                        </p>
                         <Button asChild className="w-full" variant="outline">
-                            <Link href="/dashboard/skill-gap">Analyze Skills</Link>
+                            <Link href="/dashboard/skill-gap">{t('analyzeSkills')}</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -83,18 +74,15 @@ export default function DashboardPage() {
                             <div className="p-2 bg-orange-500/10 rounded-lg">
                                 <TrendingUp className="w-6 h-6 text-orange-500" />
                             </div>
-                            <CardTitle>AI CV Maker</CardTitle>
+                            <CardTitle>{t('aiCvMaker')}</CardTitle>
                         </div>
                         <CardDescription>
-                            Create a professional CV with AI assistance
+                            {t('aiCvMakerDesc')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Edit CV sections with AI suggestions based on your analysis.
-                        </p>
                         <Button asChild className="w-full" variant="outline">
-                            <Link href="/dashboard/cv-improve">Go to CV Maker</Link>
+                            <Link href="/dashboard/cv-improve">{t('goToCvMaker')}</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -106,18 +94,15 @@ export default function DashboardPage() {
                             <div className="p-2 bg-pink-500/10 rounded-lg">
                                 <MessageCircle className="w-6 h-6 text-pink-500" />
                             </div>
-                            <CardTitle>Interview Prep</CardTitle>
+                            <CardTitle>{t('interviewPrep')}</CardTitle>
                         </div>
                         <CardDescription>
-                            AI mock interviews
+                            {t('interviewPrepDesc')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Practice common questions and get AI feedback on answers.
-                        </p>
                         <Button asChild className="w-full" variant="outline">
-                            <Link href="/dashboard/interview-prep">Start Practice</Link>
+                            <Link href="/dashboard/interview-prep">{t('startPractice')}</Link>
                         </Button>
                     </CardContent>
                 </Card>

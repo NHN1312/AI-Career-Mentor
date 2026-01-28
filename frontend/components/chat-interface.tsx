@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useTranslations, useLocale } from 'next-intl'
+import ReactMarkdown from 'react-markdown'
 
 type Message = {
     id: string
@@ -17,6 +19,8 @@ export function ChatInterface() {
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const t = useTranslations('Chat')
+    const locale = useLocale()
 
     useEffect(() => {
         setChatId(crypto.randomUUID())
@@ -46,6 +50,7 @@ export function ChatInterface() {
                         content: m.content,
                     })),
                     chatId,
+                    data: { locale } // Pass locale to API
                 }),
             })
 
@@ -76,7 +81,7 @@ export function ChatInterface() {
             setMessages(prev => [...prev, {
                 id: crypto.randomUUID(),
                 role: 'assistant',
-                content: 'Sorry, there was an error processing your request.',
+                content: t('error'),
             }])
         } finally {
             setIsLoading(false)
@@ -86,13 +91,13 @@ export function ChatInterface() {
     return (
         <Card className="w-full h-[600px] flex flex-col">
             <CardHeader>
-                <CardTitle>AI Career Mentor</CardTitle>
+                <CardTitle>{t('title')}</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto space-y-4 p-4">
                 {messages.length === 0 && (
                     <div className="text-center text-muted-foreground mt-20">
-                        <p>Hello! I am your AI Career Mentor.</p>
-                        <p>Ask me about resume tips, interview prep, or career paths.</p>
+                        <p>{t('welcome1')}</p>
+                        <p>{t('welcome2')}</p>
                     </div>
                 )}
                 {messages.map((m) => (
@@ -102,8 +107,19 @@ export function ChatInterface() {
                                 <AvatarFallback>{m.role === 'user' ? 'U' : 'AI'}</AvatarFallback>
                                 <AvatarImage src={m.role === 'user' ? undefined : "/ai-avatar.png"} />
                             </Avatar>
-                            <div className={`rounded-lg p-3 ${m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                                {m.content}
+                            <div className={`rounded-lg p-3 ${m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'} overflow-hidden prose prose-sm dark:prose-invert max-w-none break-words`}>
+                                <ReactMarkdown
+                                    components={{
+                                        p: ({ node, ...props }: any) => <p className="mb-2 last:mb-0" {...props} />,
+                                        ul: ({ node, ...props }: any) => <ul className="list-disc pl-4 mb-2" {...props} />,
+                                        ol: ({ node, ...props }: any) => <ol className="list-decimal pl-4 mb-2" {...props} />,
+                                        li: ({ node, ...props }: any) => <li className="mb-1" {...props} />,
+                                        a: ({ node, ...props }: any) => <a className="text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                                        strong: ({ node, ...props }: any) => <strong className="font-bold" {...props} />,
+                                    }}
+                                >
+                                    {m.content}
+                                </ReactMarkdown>
                             </div>
                         </div>
                     </div>
@@ -114,11 +130,11 @@ export function ChatInterface() {
                     <Input
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ask for career advice..."
+                        placeholder={t('placeholder')}
                         disabled={isLoading}
                     />
                     <Button type="submit" disabled={isLoading || !input.trim()}>
-                        {isLoading ? '...' : 'Send'}
+                        {isLoading ? '...' : t('send')}
                     </Button>
                 </form>
             </CardFooter>

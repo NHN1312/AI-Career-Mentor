@@ -6,19 +6,24 @@ export const maxDuration = 30
 
 export async function POST(req: Request) {
     try {
-        const { question, answer, role } = await req.json()
+        const { question, answer, role, seniority, locale } = await req.json()
 
         if (!question || !answer) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+            return NextResponse.json({ error: 'Missing question or answer' }, { status: 400 })
         }
+
+        const seniorityText = seniority ? ` for a ${seniority} level` : '';
+        const languageInstruction = locale === 'vi' ? 'Respond in Vietnamese (Tiếng Việt).' : 'Respond in English.';
 
         const { text } = await generateText({
             model: google('models/gemini-2.5-flash'),
-            prompt: `Analyze this interview answer for a ${role || 'professional'} position.
+            prompt: `You are an expert technical interviewer. Analyze the following interview answer${seniorityText}.
+            
+Question: "${question}"
+Candidate Answer: "${answer}"
+Target Role: ${role}
 
-Question: ${question}
-Answer: ${answer}
-
+${languageInstruction}
 Provide feedback in this exact JSON structure:
 {
   "score": <number 1-10>,

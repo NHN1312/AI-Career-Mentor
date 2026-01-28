@@ -1,12 +1,13 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { Link, usePathname, useRouter } from '@/i18n/routing'
 import { useTheme } from 'next-themes'
 import { Button } from './ui/button'
 import { createClient } from '@/utils/supabase/client'
 import { Home, FileText, LogOut, User, Moon, Sun } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { LanguageToggle } from './LanguageToggle'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,6 +20,7 @@ export function Navbar() {
     const router = useRouter()
     const { theme, setTheme } = useTheme()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
+    const t = useTranslations('Navbar')
 
     const handleLogout = async () => {
         setIsLoggingOut(true)
@@ -28,9 +30,9 @@ export function Navbar() {
     }
 
     const navItems = [
-        { href: '/dashboard', label: 'Dashboard', icon: Home },
-        { href: '/dashboard/resume', label: 'Resume Analyzer', icon: FileText },
-        { href: '/dashboard/profile', label: 'My Profile', icon: User },
+        { href: '/dashboard', label: t('dashboard'), icon: Home },
+        { href: '/dashboard/resume', label: t('resumeAnalyzer'), icon: FileText },
+        { href: '/dashboard/profile', label: t('myProfile'), icon: User },
     ]
 
     return (
@@ -45,7 +47,8 @@ export function Navbar() {
                     <div className="hidden md:flex items-center gap-1">
                         {navItems.map((item) => {
                             const Icon = item.icon
-                            const isActive = pathname === item.href
+                            // Basic active check, might need improvement for subroutes
+                            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
                             return (
                                 <Button
                                     key={item.href}
@@ -65,6 +68,8 @@ export function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                    <LanguageToggle />
+
                     <Button
                         variant="ghost"
                         size="icon"
@@ -84,7 +89,7 @@ export function Navbar() {
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
                                 <LogOut className="w-4 h-4 mr-2" />
-                                {isLoggingOut ? 'Logging out...' : 'Logout'}
+                                {isLoggingOut ? t('loggingOut') : t('logout')}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
