@@ -1,158 +1,195 @@
+'use client'
+
 import React from 'react'
 
 interface CVPreviewProps {
-  cvData: {
+  data: {
+    fullName: string
+    email: string
+    phone: string
+    address: string
+    linkedin: string
     summary: string
+    experience: Array<{
+      organization: string
+      position: string
+      startDate: string
+      endDate: string
+      location: string
+      description: string
+    }>
+    education: Array<{
+      institution: string
+      degree: string
+      field: string
+      startDate: string
+      endDate: string
+      location: string
+      gpa: string
+      description: string
+    }>
     skills: string
-    experience: string
+    projects: Array<{
+      name: string
+      description: string
+      role: string
+      startDate: string
+      endDate: string
+      githubLink: string
+      technologies: string
+    }>
   }
-  profileData: any
+  template: 'harvard' | 'modern' | 'creative'
 }
 
-export const CVPreview = React.forwardRef<HTMLDivElement, CVPreviewProps>(
-  ({ cvData, profileData }, ref) => {
-    const name = profileData?.profile?.email?.split('@')[0]?.toUpperCase() || 'YOUR NAME'
-    const email = profileData?.profile?.email || 'email@example.com'
+export function CVPreview({ data, template }: CVPreviewProps) {
+  const isModern = template === 'modern'
+  const isCreative = template === 'creative'
 
-    return (
-      <div
-        ref={ref}
-        style={{
-          all: 'revert',
-          width: '210mm',
-          minHeight: '297mm',
-          padding: '20mm',
-          backgroundColor: '#ffffff',
-          fontFamily: '"Times New Roman", Times, serif',
-          fontSize: '11pt',
-          lineHeight: '1.4',
-          color: '#000000',
-        }}
-      >
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <div style={{ fontSize: '18pt', fontWeight: 'bold', marginBottom: '5px' }}>
-            {name}
-          </div>
-          <div style={{ fontSize: '10pt' }}>{email}</div>
+  console.log('CVPreview data:', data)
+
+  return (
+    <div className="w-full h-full overflow-auto bg-white p-12 shadow-2xl" style={{ fontFamily: 'serif' }}>
+      {/* Header */}
+      <div className={`mb-6 ${isModern ? 'text-left' : 'text-center'}`}>
+        <h1 className={`text-3xl font-bold mb-2 ${isCreative ? 'text-blue-600' : 'text-black'}`}>
+          {data.fullName || 'Your Name'}
+        </h1>
+        <div className="text-sm text-gray-600 space-x-2">
+          {data.email && <span>{data.email}</span>}
+          {data.phone && <span>| {data.phone}</span>}
+          {data.address && <span>| {data.address}</span>}
+          {data.linkedin && <span>| <a href={data.linkedin} className="text-blue-600 hover:underline">{data.linkedin}</a></span>}
         </div>
+      </div>
 
-        {/* Summary */}
-        {cvData.summary && (
-          <div style={{ marginBottom: '18px' }}>
-            <div style={{
-              fontSize: '12pt',
-              fontWeight: 'bold',
-              borderBottom: '1px solid #000',
-              paddingBottom: '2px',
-              marginBottom: '8px'
-            }}>
-              SUMMARY
-            </div>
-            <p style={{ margin: 0 }}>{cvData.summary}</p>
-          </div>
-        )}
+      {/* Summary */}
+      {data.summary && (
+        <div className="mb-6">
+          <h2 className={`text-lg font-bold mb-2 ${isCreative ? 'text-blue-600' : 'text-black'} ${!isModern && 'underline'}`}>
+            Professional Summary
+          </h2>
+          <p className="text-base leading-relaxed whitespace-pre-wrap text-black">{data.summary}</p>
+        </div>
+      )}
 
-        {/* Education */}
-        {profileData?.education?.length > 0 && (
-          <div style={{ marginBottom: '18px' }}>
-            <div style={{
-              fontSize: '12pt',
-              fontWeight: 'bold',
-              borderBottom: '1px solid #000',
-              paddingBottom: '2px',
-              marginBottom: '8px'
-            }}>
-              EDUCATION
-            </div>
-            {profileData.education.map((edu: any, i: number) => (
-              <div key={i} style={{ marginBottom: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                  <div style={{ fontWeight: 'bold' }}>{edu.degree}</div>
-                  <div style={{ fontStyle: 'italic', fontSize: '10pt' }}>
-                    {edu.start_date || ''} - {edu.end_date || 'Present'}
+      {/* Experience */}
+      {data.experience.length > 0 && (
+        <div className="mb-6">
+          <h2 className={`text-lg font-bold mb-2 ${isCreative ? 'text-blue-600' : 'text-black'} ${!isModern && 'underline'}`}>
+            Work Experience
+          </h2>
+          <div className="space-y-4">
+            {data.experience.map((exp, idx) => (
+              <div key={idx}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-black">{exp.organization || 'Company'}</h3>
+                    <p className="text-sm text-gray-700 italic">{exp.position || 'Position'}</p>
+                  </div>
+                  <div className="text-right text-sm">
+                    {exp.location && <p className="text-gray-600">{exp.location}</p>}
+                    <p className="text-gray-600">
+                      {exp.startDate || 'Start'} - {exp.endDate || 'End'}
+                    </p>
                   </div>
                 </div>
-                <div style={{ fontStyle: 'italic', marginBottom: '4px' }}>{edu.institution}</div>
-                {edu.field_of_study && <div>Field: {edu.field_of_study}</div>}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Experience */}
-        {profileData?.workExperience?.length > 0 && (
-          <div style={{ marginBottom: '18px' }}>
-            <div style={{
-              fontSize: '12pt',
-              fontWeight: 'bold',
-              borderBottom: '1px solid #000',
-              paddingBottom: '2px',
-              marginBottom: '8px'
-            }}>
-              EXPERIENCE
-            </div>
-            {profileData.workExperience.map((exp: any, i: number) => (
-              <div key={i} style={{ marginBottom: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                  <div style={{ fontWeight: 'bold' }}>{exp.position}</div>
-                  <div style={{ fontStyle: 'italic', fontSize: '10pt' }}>
-                    {exp.start_date || ''} - {exp.end_date || 'Present'}
-                  </div>
-                </div>
-                <div style={{ fontStyle: 'italic', marginBottom: '4px' }}>{exp.company}</div>
                 {exp.description && (
-                  <div style={{ marginLeft: '20px', marginBottom: '3px' }}>
-                    • {exp.description}
+                  <div className="mt-1 text-base text-black whitespace-pre-wrap leading-relaxed">
+                    {exp.description}
                   </div>
                 )}
               </div>
             ))}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Skills */}
-        {profileData?.skills?.length > 0 && (
-          <div style={{ marginBottom: '18px' }}>
-            <div style={{
-              fontSize: '12pt',
-              fontWeight: 'bold',
-              borderBottom: '1px solid #000',
-              paddingBottom: '2px',
-              marginBottom: '8px'
-            }}>
-              SKILLS
-            </div>
-            <div style={{ lineHeight: '1.6' }}>
-              {profileData.skills.map((s: any) => s.skill_name).join(', ')}
-            </div>
-          </div>
-        )}
-
-        {/* Certifications */}
-        {profileData?.certifications?.length > 0 && (
-          <div style={{ marginBottom: '18px' }}>
-            <div style={{
-              fontSize: '12pt',
-              fontWeight: 'bold',
-              borderBottom: '1px solid #000',
-              paddingBottom: '2px',
-              marginBottom: '8px'
-            }}>
-              CERTIFICATIONS
-            </div>
-            {profileData.certifications.map((cert: any, i: number) => (
-              <div key={i} style={{ marginBottom: '5px' }}>
-                <strong>{cert.certification_name}</strong>
-                {cert.issuing_organization && ` - ${cert.issuing_organization}`}
-                {cert.issue_date && ` (${cert.issue_date})`}
+      {/* Education */}
+      {data.education.length > 0 && (
+        <div className="mb-6">
+          <h2 className={`text-lg font-bold mb-2 ${isCreative ? 'text-blue-600' : 'text-black'} ${!isModern && 'underline'}`}>
+            Education
+          </h2>
+          <div className="space-y-4">
+            {data.education.map((edu, idx) => (
+              <div key={idx}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-black">{edu.institution || 'Institution'}</h3>
+                    <p className="text-sm text-gray-700">
+                      {edu.degree} {edu.field && `in ${edu.field}`}
+                      {edu.gpa && ` - GPA: ${edu.gpa}`}
+                    </p>
+                  </div>
+                  <div className="text-right text-sm">
+                    {edu.location && <p className="text-gray-600">{edu.location}</p>}
+                    <p className="text-gray-600">
+                      {edu.startDate || 'Start'} - {edu.endDate || 'End'}
+                    </p>
+                  </div>
+                </div>
+                {edu.description && (
+                  <div className="mt-1 text-base text-black whitespace-pre-wrap leading-relaxed">
+                    {edu.description}
+                  </div>
+                )}
               </div>
             ))}
           </div>
-        )}
-      </div>
-    )
-  }
-)
+        </div>
+      )}
 
-CVPreview.displayName = 'CVPreview'
+      {/* Skills */}
+      {data.skills && (
+        <div className="mb-6">
+          <h2 className={`text-lg font-bold mb-2 ${isCreative ? 'text-blue-600' : 'text-black'} ${!isModern && 'underline'}`}>
+            Skills
+          </h2>
+          <p className="text-base leading-relaxed text-black">{data.skills}</p>
+        </div>
+      )}
+
+      {/* Projects */}
+      {data.projects.length > 0 && (
+        <div className="mb-6">
+          <h2 className={`text-lg font-bold mb-2 ${isCreative ? 'text-blue-600' : 'text-black'} ${!isModern && 'underline'}`}>
+            Projects
+          </h2>
+          <div className="space-y-4">
+            {data.projects.map((proj, idx) => (
+              <div key={idx}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-black">{proj.name || 'Project Name'}</h3>
+                    {proj.role && <p className="text-sm text-gray-700 italic">{proj.role}</p>}
+                  </div>
+                  <div className="text-right text-sm text-gray-600">
+                    {proj.startDate || 'Start'} - {proj.endDate || 'End'}
+                  </div>
+                </div>
+                {proj.technologies && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    <span className="font-semibold">Technologies:</span> {proj.technologies}
+                  </p>
+                )}
+                {proj.githubLink && (
+                  <p className="text-sm mt-1">
+                    <a href={proj.githubLink} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                      {proj.githubLink}
+                    </a>
+                  </p>
+                )}
+                {proj.description && (
+                  <div className="mt-1 text-base text-black whitespace-pre-wrap leading-relaxed">
+                    {proj.description}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
