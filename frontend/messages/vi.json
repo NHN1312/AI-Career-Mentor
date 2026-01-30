@@ -186,9 +186,62 @@
         "levels": {
             "intern": "Thực tập sinh (Intern)",
             "junior": "Mới ra trường (Junior)",
-            "mid-level": "Giữa cấp (Mid-Level)",
-            "senior": "Cao cấp (Senior)",
-            "lead": "Trưởng nhóm / Quản lý"
+            "mid-level": "Trung Cấp",
+            "senior": "Cao Cấp",
+            "lead": "Trưởng Nhóm / Quản Lý"
+        }
+    },
+    "AIContext": {
+        "pleaseFillRequired": "Vui lòng điền đầy đủ các trường bắt buộc",
+        "generationFailed": "Tạo nội dung thất bại. Vui lòng thử lại.",
+        "generating": "Đang tạo...",
+        "generate": "Tạo bằng AI",
+        "cancel": "Hủy",
+        "summary": {
+            "title": "Tạo Giới Thiệu Chuyên Nghiệp",
+            "description": "Cung cấp thông tin để tạo phần giới thiệu cá nhân hóa",
+            "jobTitle": "Vị Trí Mục Tiêu",
+            "jobTitlePlaceholder": "VD: Kỹ Sư Phần Mềm Senior",
+            "yearsExperience": "Số Năm Kinh Nghiệm",
+            "yearsPlaceholder": "VD: 5 năm",
+            "keySkills": "Kỹ Năng Chính",
+            "skillsPlaceholder": "VD: React, Node.js, Python, Quản Lý Nhóm",
+            "industry": "Ngành/Lĩnh Vực",
+            "industryPlaceholder": "VD: FinTech, Thương mại điện tử, Y tế"
+        },
+        "experience": {
+            "title": "Tạo Mô Tả Kinh Nghiệm",
+            "description": "Cung cấp thông tin về công việc để tạo các điểm nổi bật",
+            "role": "Vị Trí/Vai Trò",
+            "rolePlaceholder": "VD: Lập Trình Viên Frontend",
+            "responsibilities": "Trách Nhiệm Chính",
+            "responsibilitiesPlaceholder": "VD: Xây dựng giao diện người dùng, làm việc với đội thiết kế",
+            "achievements": "Thành Tựu Chính",
+            "achievementsPlaceholder": "VD: Cải thiện tốc độ tải trang 40%, dẫn dắt migration sang React",
+            "technologies": "Công Nghệ/Công Cụ Sử Dụng",
+            "technologiesPlaceholder": "VD: React, TypeScript, AWS, Docker"
+        },
+        "project": {
+            "title": "Tạo Mô Tả Dự Án",
+            "description": "Mô tả dự án để tạo nội dung chuyên nghiệp",
+            "role": "Vai Trò Của Bạn",
+            "rolePlaceholder": "VD: Full-stack Developer, Trưởng Nhóm",
+            "projectType": "Loại/Lĩnh Vực Dự Án",
+            "projectTypePlaceholder": "VD: Nền tảng thương mại điện tử, Ứng dụng di động",
+            "technologies": "Công Nghệ Sử Dụng",
+            "technologiesPlaceholder": "VD: Next.js, PostgreSQL, Redis",
+            "outcomes": "Kết Quả/Tác Động Chính",
+            "outcomesPlaceholder": "VD: Tăng chuyển đổi 25%, phục vụ 100k người dùng"
+        },
+        "skills": {
+            "title": "Tạo Danh Sách Kỹ Năng",
+            "description": "Giúp chúng tôi hiểu nền tảng của bạn để gợi ý kỹ năng phù hợp",
+            "industry": "Ngành/Lĩnh Vực",
+            "industryPlaceholder": "VD: Phát Triển Web, Khoa Học Dữ Liệu",
+            "level": "Cấp Độ Kinh Nghiệm",
+            "levelPlaceholder": "VD: Mới vào nghề, Trung cấp, Cao cấp",
+            "focus": "Lĩnh Vực Tập Trung (tùy chọn)",
+            "focusPlaceholder": "VD: Frontend, Backend, DevOps, Machine Learning"
         }
     }
 }

@@ -180,5 +180,58 @@
       "senior": "Senior",
       "lead": "Lead / Manager"
     }
+  },
+  "AIContext": {
+    "pleaseFillRequired": "Please fill in all required fields",
+    "generationFailed": "Failed to generate content. Please try again.",
+    "generating": "Generating...",
+    "generate": "Generate with AI",
+    "cancel": "Cancel",
+    "summary": {
+      "title": "AI Professional Summary",
+      "description": "Provide some context to generate a personalized professional summary",
+      "jobTitle": "Target Position",
+      "jobTitlePlaceholder": "e.g., Senior Software Engineer",
+      "yearsExperience": "Years of Experience",
+      "yearsPlaceholder": "e.g., 5 years",
+      "keySkills": "Key Skills",
+      "skillsPlaceholder": "e.g., React, Node.js, Python, Team Leadership",
+      "industry": "Industry/Field",
+      "industryPlaceholder": "e.g., FinTech, E-commerce, Healthcare"
+    },
+    "experience": {
+      "title": "AI Experience Description",
+      "description": "Tell us about this role to generate compelling bullet points",
+      "role": "Your Role/Position",
+      "rolePlaceholder": "e.g., Frontend Developer",
+      "responsibilities": "Key Responsibilities",
+      "responsibilitiesPlaceholder": "e.g., Built user interfaces, collaborated with design team",
+      "achievements": "Main Achievements",
+      "achievementsPlaceholder": "e.g., Improved page load time by 40%, led migration to React",
+      "technologies": "Technologies/Tools Used",
+      "technologiesPlaceholder": "e.g., React, TypeScript, AWS, Docker"
+    },
+    "project": {
+      "title": "AI Project Description",
+      "description": "Describe your project to generate a professional description",
+      "role": "Your Role",
+      "rolePlaceholder": "e.g., Full-stack Developer, Team Lead",
+      "projectType": "Project Type/Domain",
+      "projectTypePlaceholder": "e.g., E-commerce platform, Mobile app",
+      "technologies": "Technologies Used",
+      "technologiesPlaceholder": "e.g., Next.js, PostgreSQL, Redis",
+      "outcomes": "Key Outcomes/Impact",
+      "outcomesPlaceholder": "e.g., Increased conversion by 25%, served 100k users"
+    },
+    "skills": {
+      "title": "AI Skills Generation",
+      "description": "Help us understand your background to suggest relevant skills",
+      "industry": "Industry/Domain",
+      "industryPlaceholder": "e.g., Web Development, Data Science",
+      "level": "Experience Level",
+      "levelPlaceholder": "e.g., Entry, Mid-level, Senior",
+      "focus": "Focus Areas (optional)",
+      "focusPlaceholder": "e.g., Frontend, Backend, DevOps, Machine Learning"
+    }
   }
 }

@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useTranslations, useLocale } from 'next-intl'
 import { CVPreview } from '@/components/CVPreview'
+import { AIContextDialog } from '@/components/AIContextDialog'
 
 // Templates
 const TEMPLATES = [
@@ -38,6 +39,11 @@ export default function CVBuilderPage() {
     const [activeTemplate, setActiveTemplate] = useState('harvard')
     const [activeTab, setActiveTab] = useState('personal')
     const [generating, setGenerating] = useState<string | null>(null) // 'summary' | 'experience'
+
+    // AI Dialog state
+    const [aiDialogOpen, setAiDialogOpen] = useState(false)
+    const [aiDialogSection, setAiDialogSection] = useState<'summary' | 'experience' | 'project' | 'skills'>('summary')
+    const [aiDialogIndex, setAiDialogIndex] = useState<number | null>(null) // For array items
 
     const [cvData, setCvData] = useState({
         fullName: '',
@@ -161,6 +167,56 @@ export default function CVBuilderPage() {
         } finally {
             setGenerating(null)
         }
+    }
+
+    // New context-based AI generation handler
+    const handleAIGenerate = async (context: Record<string, any>) => {
+        const genKey = aiDialogIndex !== null ? `${aiDialogSection}-${aiDialogIndex}` : aiDialogSection
+        setGenerating(genKey)
+
+        try {
+            const response = await fetch('/api/cv/ai-suggest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    section: aiDialogSection,
+                    context
+                })
+            })
+
+            if (!response.ok) {
+                throw new Error('Failed to generate content')
+            }
+
+            const data = await response.json()
+            const suggestion = data.suggestion
+
+            // Update the appropriate section
+            if (aiDialogSection === 'summary') {
+                setCvData(prev => ({ ...prev, summary: suggestion }))
+            } else if (aiDialogSection === 'experience' && aiDialogIndex !== null) {
+                const newExp = [...cvData.experience]
+                newExp[aiDialogIndex].description = suggestion
+                setCvData(prev => ({ ...prev, experience: newExp }))
+            } else if (aiDialogSection === 'project' && aiDialogIndex !== null) {
+                const newProj = [...cvData.projects]
+                newProj[aiDialogIndex].description = suggestion
+                setCvData(prev => ({ ...prev, projects: newProj }))
+            } else if (aiDialogSection === 'skills') {
+                setCvData(prev => ({ ...prev, skills: suggestion }))
+            }
+        } catch (error) {
+            console.error('AI generation error:', error)
+            throw error // Re-throw to let dialog handle error display
+        } finally {
+            setGenerating(null)
+        }
+    }
+
+    const openAIDialog = (section: 'summary' | 'experience' | 'project' | 'skills', index?: number) => {
+        setAiDialogSection(section)
+        setAiDialogIndex(index ?? null)
+        setAiDialogOpen(true)
     }
 
     const downloadPDF = async () => {
@@ -425,7 +481,7 @@ export default function CVBuilderPage() {
                                             variant="ghost"
                                             size="sm"
                                             className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                                            onClick={() => handleMagicWrite('summary')}
+                                            onClick={() => openAIDialog('summary')}
                                             disabled={!!generating}
                                         >
                                             {generating === 'summary' ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
@@ -556,17 +612,9 @@ export default function CVBuilderPage() {
                                                                     variant="ghost"
                                                                     size="sm"
                                                                     className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 h-6"
-                                                                    onClick={() => handleMagicWrite('experience', {
-                                                                        position: exp.position,
-                                                                        company: exp.organization
-                                                                    }, index)}
-                                                                    disabled={!!generating}
+                                                                    onClick={() => openAIDialog('experience', index)}
                                                                 >
-                                                                    {generating === `experience-${index}` ? (
-                                                                        <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                                                                    ) : (
-                                                                        <Wand2 className="w-3 h-3 mr-1" />
-                                                                    )}
+                                                                    <Wand2 className="w-3 h-3 mr-1" />
                                                                     AI Suggest
                                                                 </Button>
                                                             </div>
@@ -785,10 +833,9 @@ export default function CVBuilderPage() {
                                             variant="ghost"
                                             size="sm"
                                             className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                                            onClick={() => handleMagicWrite('skills')}
-                                            disabled={!!generating}
+                                            onClick={() => openAIDialog('skills')}
                                         >
-                                            {generating === 'skills' ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
+                                            <Wand2 className="w-4 h-4 mr-2" />
                                             {translate('magicButton')}
                                         </Button>
                                     </div>
@@ -930,18 +977,9 @@ export default function CVBuilderPage() {
                                                                     variant="ghost"
                                                                     size="sm"
                                                                     className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 h-6"
-                                                                    onClick={() => handleMagicWrite('projects', {
-                                                                        name: proj.name,
-                                                                        role: proj.role,
-                                                                        technologies: proj.technologies
-                                                                    }, index)}
-                                                                    disabled={!!generating}
+                                                                    onClick={() => openAIDialog('project', index)}
                                                                 >
-                                                                    {generating === `projects-${index}` ? (
-                                                                        <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                                                                    ) : (
-                                                                        <Wand2 className="w-3 h-3 mr-1" />
-                                                                    )}
+                                                                    <Wand2 className="w-3 h-3 mr-1" />
                                                                     AI Suggest
                                                                 </Button>
                                                             </div>
@@ -978,6 +1016,15 @@ export default function CVBuilderPage() {
                     <CVPreview data={cvData} template={activeTemplate as 'harvard' | 'modern' | 'creative'} />
                 </div>
             </div>
+
+            {/* AI Context Dialog */}
+            <AIContextDialog
+                open={aiDialogOpen}
+                onOpenChange={setAiDialogOpen}
+                section={aiDialogSection}
+                onGenerate={handleAIGenerate}
+                loading={!!generating}
+            />
         </div>
     )
 }
