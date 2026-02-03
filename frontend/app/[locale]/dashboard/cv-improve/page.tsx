@@ -441,7 +441,7 @@ export default function CVBuilderPage() {
                                 <TabsTrigger value="personal" className="data-[state=active]:bg-muted data-[state=active]:shadow-none border border-transparent data-[state=active]:border-border">{translate('personalInfo')}</TabsTrigger>
                                 <TabsTrigger value="summary" className="data-[state=active]:bg-muted data-[state=active]:shadow-none border border-transparent data-[state=active]:border-border">{translate('summary')}</TabsTrigger>
                                 <TabsTrigger value="experience" className="data-[state=active]:bg-muted data-[state=active]:shadow-none border border-transparent data-[state=active]:border-border">{translate('experience')}</TabsTrigger>
-                                <TabsTrigger value="education" className="data-[state=active]:bg-muted data-[state=active]:shadow-none border border-transparent data-[state=active]:border-border">Education</TabsTrigger>
+                                <TabsTrigger value="education" className="data-[state=active]:bg-muted data-[state=active]:shadow-none border border-transparent data-[state=active]:border-border">{translate('education')}</TabsTrigger>
                                 <TabsTrigger value="skills" className="data-[state=active]:bg-muted data-[state=active]:shadow-none border border-transparent data-[state=active]:border-border">{translate('skills')}</TabsTrigger>
                                 <TabsTrigger value="projects" className="data-[state=active]:bg-muted data-[state=active]:shadow-none border border-transparent data-[state=active]:border-border">{translate('projects')}</TabsTrigger>
                             </TabsList>
@@ -568,7 +568,7 @@ export default function CVBuilderPage() {
 
                                                         <div className="grid grid-cols-3 gap-3">
                                                             <div>
-                                                                <Label className="text-xs">Start Date</Label>
+                                                                <Label className="text-xs">{translate('startDate')}</Label>
                                                                 <Input
                                                                     value={exp.startDate}
                                                                     onChange={e => {
@@ -580,7 +580,7 @@ export default function CVBuilderPage() {
                                                                 />
                                                             </div>
                                                             <div>
-                                                                <Label className="text-xs">End Date</Label>
+                                                                <Label className="text-xs">{translate('endDate')}</Label>
                                                                 <Input
                                                                     value={exp.endDate}
                                                                     onChange={e => {
@@ -592,7 +592,7 @@ export default function CVBuilderPage() {
                                                                 />
                                                             </div>
                                                             <div>
-                                                                <Label className="text-xs">Location</Label>
+                                                                <Label className="text-xs">{translate('location')}</Label>
                                                                 <Input
                                                                     value={exp.location}
                                                                     onChange={e => {
@@ -600,14 +600,14 @@ export default function CVBuilderPage() {
                                                                         newExp[index].location = e.target.value
                                                                         setCvData({ ...cvData, experience: newExp })
                                                                     }}
-                                                                    placeholder="City, State"
+                                                                    placeholder="City"
                                                                 />
                                                             </div>
                                                         </div>
 
                                                         <div>
                                                             <div className="flex justify-between items-center mb-1">
-                                                                <Label className="text-xs">Description</Label>
+                                                                <Label className="text-xs">{translate('description')}</Label>
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"
@@ -743,7 +743,7 @@ export default function CVBuilderPage() {
 
                                                         <div className="grid grid-cols-3 gap-3">
                                                             <div>
-                                                                <Label className="text-xs">Start Date</Label>
+                                                                <Label className="text-xs">{translate('startDate')}</Label>
                                                                 <Input
                                                                     value={edu.startDate}
                                                                     onChange={e => {
@@ -755,7 +755,7 @@ export default function CVBuilderPage() {
                                                                 />
                                                             </div>
                                                             <div>
-                                                                <Label className="text-xs">End Date</Label>
+                                                                <Label className="text-xs">{translate('endDate')}</Label>
                                                                 <Input
                                                                     value={edu.endDate}
                                                                     onChange={e => {
@@ -767,7 +767,7 @@ export default function CVBuilderPage() {
                                                                 />
                                                             </div>
                                                             <div>
-                                                                <Label className="text-xs">Location</Label>
+                                                                <Label className="text-xs">{translate('location')}</Label>
                                                                 <Input
                                                                     value={edu.location}
                                                                     onChange={e => {
@@ -775,44 +775,12 @@ export default function CVBuilderPage() {
                                                                         newEdu[index].location = e.target.value
                                                                         setCvData({ ...cvData, education: newEdu })
                                                                     }}
-                                                                    placeholder="City, State"
+                                                                    placeholder="City"
                                                                 />
                                                             </div>
                                                         </div>
 
-                                                        <div>
-                                                            <div className="flex justify-between items-center mb-1">
-                                                                <Label className="text-xs">Description (Optional)</Label>
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 h-6"
-                                                                    onClick={() => handleMagicWrite('education', {
-                                                                        degree: edu.degree,
-                                                                        field: edu.field,
-                                                                        institution: edu.institution
-                                                                    }, index)}
-                                                                    disabled={!!generating}
-                                                                >
-                                                                    {generating === `education-${index}` ? (
-                                                                        <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                                                                    ) : (
-                                                                        <Wand2 className="w-3 h-3 mr-1" />
-                                                                    )}
-                                                                    AI Suggest
-                                                                </Button>
-                                                            </div>
-                                                            <Textarea
-                                                                className="min-h-[100px] text-sm"
-                                                                value={edu.description}
-                                                                onChange={e => {
-                                                                    const newEdu = [...cvData.education]
-                                                                    newEdu[index].description = e.target.value
-                                                                    setCvData({ ...cvData, education: newEdu })
-                                                                }}
-                                                                placeholder="Relevant coursework, honors, activities..."
-                                                            />
-                                                        </div>
+
                                                     </CardContent>
                                                 </Card>
                                             ))}
@@ -920,7 +888,7 @@ export default function CVBuilderPage() {
 
                                                         <div className="grid grid-cols-3 gap-3">
                                                             <div>
-                                                                <Label className="text-xs">Start Date</Label>
+                                                                <Label className="text-xs">{translate('startDate')}</Label>
                                                                 <Input
                                                                     value={proj.startDate}
                                                                     onChange={e => {
@@ -932,7 +900,7 @@ export default function CVBuilderPage() {
                                                                 />
                                                             </div>
                                                             <div>
-                                                                <Label className="text-xs">End Date</Label>
+                                                                <Label className="text-xs">{translate('endDate')}</Label>
                                                                 <Input
                                                                     value={proj.endDate}
                                                                     onChange={e => {
@@ -972,7 +940,7 @@ export default function CVBuilderPage() {
 
                                                         <div>
                                                             <div className="flex justify-between items-center mb-1">
-                                                                <Label className="text-xs">Description</Label>
+                                                                <Label className="text-xs">{translate('description')}</Label>
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"

@@ -74,6 +74,7 @@ export function Navbar() {
                         variant="ghost"
                         size="icon"
                         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                        suppressHydrationWarning
                     >
                         <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                         <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -82,7 +83,7 @@ export function Navbar() {
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="icon" suppressHydrationWarning>
                                 <User className="w-5 h-5" />
                             </Button>
                         </DropdownMenuTrigger>
