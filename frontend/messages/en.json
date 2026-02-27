@@ -6,6 +6,18 @@
     "logout": "Logout",
     "loggingOut": "Logging out..."
   },
+  "Login": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to your account to continue",
+    "email": "Email",
+    "password": "Password",
+    "login": "Sign In",
+    "orSignUp": "Don't have an account?",
+    "signUp": "Create Account",
+    "backToHome": "Back to home",
+    "successLogin": "Signed in! Redirecting...",
+    "successSignup": "Check your email for a confirmation link."
+  },
   "Dashboard": {
     "title": "Dashboard",
     "aiCareerChat": "AI Career Chat",
@@ -232,6 +244,62 @@
       "levelPlaceholder": "e.g., Entry, Mid-level, Senior",
       "focus": "Focus Areas (optional)",
       "focusPlaceholder": "e.g., Frontend, Backend, DevOps, Machine Learning"
+    }
+  },
+  "Landing": {
+    "nav": {
+      "features": "Features",
+      "testimonials": "Testimonials",
+      "login": "Login"
+    },
+    "hero": {
+      "badge": "AI-powered career platform",
+      "title": "Unlock Your Career Potential",
+      "subtitle": "AI-powered career guidance, resume reviews, and interview preparation — all in one place.",
+      "cta": "Get Started Free",
+      "learnMore": "Learn More"
+    },
+    "features": {
+      "title": "Everything You Need",
+      "subtitle": "A complete toolkit to accelerate your career growth",
+      "resume": {
+        "title": "Smart Resume Analysis",
+        "desc": "Upload your CV and get instant AI feedback. Get an ATS-friendliness score, identify weaknesses, and receive tailored suggestions."
+      },
+      "skillGap": {
+        "title": "Skill Gap Analysis",
+        "desc": "Discover exactly which skills you need for your target role and get a personalized learning roadmap."
+      },
+      "interview": {
+        "title": "Mock Interviews",
+        "desc": "Practice with AI-driven interview questions matched to your role and seniority level. Get instant, detailed feedback."
+      }
+    },
+    "testimonials": {
+      "title": "What Users Say",
+      "subtitle": "Trusted by students and professionals",
+      "items": [
+        {
+          "quote": "The CV analysis feature pointed out things I'd been missing for months. Got an interview within 2 weeks of fixing them.",
+          "name": "Nguyen Minh Tuan",
+          "role": "Software Engineer"
+        },
+        {
+          "quote": "The mock interview feature is incredibly realistic. It helped me confidently answer behavioral questions I used to struggle with.",
+          "name": "Tran Thi Lan",
+          "role": "Product Manager"
+        },
+        {
+          "quote": "Skill gap analysis showed me exactly what to learn. I followed the roadmap and landed a promotion in 3 months.",
+          "name": "Le Van Duc",
+          "role": "Data Analyst"
+        }
+      ]
+    },
+    "footer": {
+      "rights": "© 2025 AI Career Mentor. All rights reserved.",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
     }
   }
 }

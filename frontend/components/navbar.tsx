@@ -4,14 +4,15 @@ import { Link, usePathname, useRouter } from '@/i18n/routing'
 import { useTheme } from 'next-themes'
 import { Button } from './ui/button'
 import { createClient } from '@/utils/supabase/client'
-import { Home, FileText, LogOut, User, Moon, Sun } from 'lucide-react'
-import { useState } from 'react'
+import { Home, FileText, LogOut, User, Moon, Sun, Shield } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { LanguageToggle } from './LanguageToggle'
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from './ui/dropdown-menu'
 
@@ -20,7 +21,23 @@ export function Navbar() {
     const router = useRouter()
     const { theme, setTheme } = useTheme()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(false)
     const t = useTranslations('Navbar')
+
+    useEffect(() => {
+        const checkAdmin = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .single()
+            setIsAdmin(profile?.role === 'admin')
+        }
+        checkAdmin()
+    }, [])
 
     const handleLogout = async () => {
         setIsLoggingOut(true)
@@ -39,7 +56,7 @@ export function Navbar() {
         <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container mx-auto flex h-16 items-center justify-between px-4">
                 <div className="flex items-center gap-6">
-                    <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg">
+                    <Link href="/" className="flex items-center gap-2 font-bold text-lg">
                         <span className="bg-primary text-primary-foreground px-2 py-1 rounded">AC</span>
                         AI Career Mentor
                     </Link>
@@ -47,7 +64,6 @@ export function Navbar() {
                     <div className="hidden md:flex items-center gap-1">
                         {navItems.map((item) => {
                             const Icon = item.icon
-                            // Basic active check, might need improvement for subroutes
                             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
                             return (
                                 <Button
@@ -64,6 +80,20 @@ export function Navbar() {
                                 </Button>
                             )
                         })}
+
+                        {isAdmin && (
+                            <Button
+                                asChild
+                                variant={pathname.startsWith('/admin') ? 'secondary' : 'ghost'}
+                                size="sm"
+                                className="gap-2"
+                            >
+                                <Link href="/admin">
+                                    <Shield className="w-4 h-4" />
+                                    Admin
+                                </Link>
+                            </Button>
+                        )}
                     </div>
                 </div>
 
@@ -88,6 +118,17 @@ export function Navbar() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                            {isAdmin && (
+                                <>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/admin" className="flex items-center gap-2 cursor-pointer">
+                                            <Shield className="w-4 h-4" />
+                                            Admin Panel
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                </>
+                            )}
                             <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
                                 <LogOut className="w-4 h-4 mr-2" />
                                 {isLoggingOut ? t('loggingOut') : t('logout')}
@@ -98,7 +139,7 @@ export function Navbar() {
             </div>
 
             {/* Mobile Navigation */}
-            <div className="md:hidden border-t px-4 py-2 flex gap-1">
+            <div className="md:hidden border-t px-4 py-2 flex gap-1 overflow-x-auto">
                 {navItems.map((item) => {
                     const Icon = item.icon
                     const isActive = pathname === item.href
@@ -108,7 +149,7 @@ export function Navbar() {
                             asChild
                             variant={isActive ? 'secondary' : 'ghost'}
                             size="sm"
-                            className="flex-1 gap-2"
+                            className="flex-1 gap-2 min-w-fit"
                         >
                             <Link href={item.href}>
                                 <Icon className="w-4 h-4" />
@@ -117,6 +158,19 @@ export function Navbar() {
                         </Button>
                     )
                 })}
+                {isAdmin && (
+                    <Button
+                        asChild
+                        variant={pathname.startsWith('/admin') ? 'secondary' : 'ghost'}
+                        size="sm"
+                        className="gap-2 min-w-fit"
+                    >
+                        <Link href="/admin">
+                            <Shield className="w-4 h-4" />
+                            Admin
+                        </Link>
+                    </Button>
+                )}
             </div>
         </nav>
     )

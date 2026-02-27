@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         const pdfDocGenerator = pdfMake.createPdf(docDefinition)
         console.log('PDF generator created')
 
-        return new Promise((resolve, reject) => {
+        return new Promise<Response>((resolve, reject) => {
             try {
                 console.log('Calling getBuffer...')
                 pdfDocGenerator.getBuffer((buffer: any) => {

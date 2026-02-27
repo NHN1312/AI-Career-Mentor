@@ -6,6 +6,18 @@
         "loggingOut": "Đang đăng xuất...",
         "logout": "Đăng Xuất"
     },
+    "Login": {
+        "title": "Chào mừng trở lại",
+        "subtitle": "Đăng nhập vào tài khoản của bạn để tiếp tục",
+        "email": "Email",
+        "password": "Mật khẩu",
+        "login": "Đăng Nhập",
+        "orSignUp": "Chưa có tài khoản?",
+        "signUp": "Tạo Tài Khoản",
+        "backToHome": "Quay về trang chủ",
+        "successLogin": "Đăng nhập thành công! Đang chuyển hướng...",
+        "successSignup": "Kiểm tra email để xác nhận tài khoản."
+    },
     "Dashboard": {
         "title": "Bảng Điều Khiển",
         "aiCareerChat": "Trợ Lý Sự Nghiệp AI",
@@ -191,6 +203,28 @@
             "lead": "Trưởng Nhóm / Quản Lý"
         }
     },
+    "CVEditor": {
+        "title": "Chỉnh Sửa CV",
+        "subtitle": "Chỉnh sửa CV với sự hỗ trợ AI - giữ nguyên template hoặc dùng mẫu của chúng tôi",
+        "preserveTemplate": "Giữ Nguyên Template",
+        "preserveTemplateDesc": "Chỉnh sửa CV trực tiếp mà vẫn giữ nguyên thiết kế gốc",
+        "newTemplate": "Dùng Mẫu Chuyên Nghiệp",
+        "newTemplateDesc": "Phân tích nội dung CV và thiết kế lại với mẫu chuyên nghiệp",
+        "preserveFeature1": "Giữ nguyên bố cục và thiết kế gốc",
+        "preserveFeature2": "Cải thiện văn bản bằng AI",
+        "preserveWarning": "Độ chính xác ~90% với PDF dạng text",
+        "professionalFeature1": "Phân tích nội dung chính xác 100%",
+        "professionalFeature2": "Hỗ trợ AI đầy đủ cho mọi phần",
+        "professionalFeature3": "Chọn từ nhiều mẫu chuyên nghiệp",
+        "selectMode": "Chọn Chế Độ Này",
+        "uploadInstruction": "Tải lên CV dạng PDF để bắt đầu",
+        "uploadCV": "Tải Lên CV",
+        "uploadHint": "Chỉ nhận file PDF (tối đa 10MB)",
+        "chooseFile": "Chọn File",
+        "uploadedFile": "File đã tải lên",
+        "editorComingSoon": "Giao diện chỉnh sửa đang được phát triển...",
+        "changeMode": "Đổi Chế Độ"
+    },
     "AIContext": {
         "pleaseFillRequired": "Vui lòng điền đầy đủ các trường bắt buộc",
         "generationFailed": "Tạo nội dung thất bại. Vui lòng thử lại.",
@@ -242,6 +276,62 @@
             "levelPlaceholder": "VD: Mới vào nghề, Trung cấp, Cao cấp",
             "focus": "Lĩnh Vực Tập Trung (tùy chọn)",
             "focusPlaceholder": "VD: Frontend, Backend, DevOps, Machine Learning"
+        }
+    },
+    "Landing": {
+        "nav": {
+            "features": "Tính Năng",
+            "testimonials": "Đánh Giá",
+            "login": "Đăng Nhập"
+        },
+        "hero": {
+            "badge": "Nền tảng sự nghiệp hỗ trợ bởi AI",
+            "title": "Bứt Phá Sự Nghiệp Cùng AI",
+            "subtitle": "Tư vấn sự nghiệp, phân tích CV và luyện phỏng vấn được cá nhân hoá — tất cả trong một nền tảng.",
+            "cta": "Bắt Đầu Miễn Phí",
+            "learnMore": "Tìm Hiểu Thêm"
+        },
+        "features": {
+            "title": "Đầy Đủ Công Cụ Bạn Cần",
+            "subtitle": "Bộ công cụ toàn diện giúp bạn tăng tốc phát triển sự nghiệp",
+            "resume": {
+                "title": "Phân Tích CV Thông Minh",
+                "desc": "Tải lên CV và nhận phản hồi AI tức thì. Đánh giá mức độ tương thích ATS, phát hiện điểm yếu và nhận gợi ý cải thiện."
+            },
+            "skillGap": {
+                "title": "Phân Tích Khoảng Cách Kỹ Năng",
+                "desc": "Xác định chính xác những kỹ năng bạn cần cho vị trí mục tiêu và nhận lộ trình học tập cá nhân hoá."
+            },
+            "interview": {
+                "title": "Luyện Phỏng Vấn AI",
+                "desc": "Thực hành với câu hỏi phỏng vấn từ AI phù hợp với vị trí và cấp độ của bạn. Nhận phản hồi chi tiết ngay lập tức."
+            }
+        },
+        "testimonials": {
+            "title": "Người Dùng Nói Gì",
+            "subtitle": "Được tin dùng bởi sinh viên và chuyên gia",
+            "items": [
+                {
+                    "quote": "Tính năng phân tích CV đã chỉ ra những điểm tôi bỏ sót nhiều tháng. Chỉ sau 2 tuần chỉnh sửa, tôi đã được mời phỏng vấn.",
+                    "name": "Nguyễn Minh Tuấn",
+                    "role": "Kỹ Sư Phần Mềm"
+                },
+                {
+                    "quote": "Tính năng phỏng vấn thử cực kỳ thực tế. Nó giúp tôi tự tin trả lời các câu hỏi hành vi mà trước đây tôi hay lúng túng.",
+                    "name": "Trần Thị Lan",
+                    "role": "Product Manager"
+                },
+                {
+                    "quote": "Phân tích khoảng cách kỹ năng giúp tôi biết cần học gì. Tôi đã theo lộ trình và được thăng chức sau 3 tháng.",
+                    "name": "Lê Văn Đức",
+                    "role": "Phân Tích Dữ Liệu"
+                }
+            ]
+        },
+        "footer": {
+            "rights": "© 2025 AI Career Mentor. Bảo lưu mọi quyền.",
+            "terms": "Điều Khoản Dịch Vụ",
+            "privacy": "Chính Sách Bảo Mật"
         }
     }
 }

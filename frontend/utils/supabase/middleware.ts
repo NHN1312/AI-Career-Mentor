@@ -17,10 +17,8 @@ export async function updateSession(request: NextRequest) {
                     return request.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-                    response = NextResponse.next({
-                        request,
-                    })
+                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+                    response = NextResponse.next({ request })
                     cookiesToSet.forEach(({ name, value, options }) =>
                         response.cookies.set(name, value, options)
                     )
@@ -33,18 +31,47 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
+    const pathname = request.nextUrl.pathname
+
+    // 1. Protect /dashboard routes (require login)
     if (
         !user &&
-        !request.nextUrl.pathname.startsWith('/login') &&
-        !request.nextUrl.pathname.startsWith('/auth') &&
-        // Check for dashboard in any locale
-        (request.nextUrl.pathname.startsWith('/dashboard') ||
-            request.nextUrl.pathname.match(/^\/(en|vi)\/dashboard/))
+        !pathname.startsWith('/login') &&
+        !pathname.startsWith('/auth') &&
+        (pathname.startsWith('/dashboard') ||
+            pathname.match(/^\/(en|vi)\/dashboard/))
     ) {
-        // no user, potentially respond by redirecting the user to the login page
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
+    }
+
+    // 2. Protect /admin routes – redirect to login if not authenticated
+    if (
+        !user &&
+        (pathname.startsWith('/admin') || pathname.match(/^\/(en|vi)\/admin/))
+    ) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        return NextResponse.redirect(url)
+    }
+
+    // 3. Protect /admin routes – redirect to dashboard if not admin role
+    if (
+        user &&
+        (pathname.startsWith('/admin') || pathname.match(/^\/(en|vi)\/admin/))
+    ) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+
+        if (!profile || profile.role !== 'admin') {
+            const url = request.nextUrl.clone()
+            url.pathname = '/dashboard'
+            return NextResponse.redirect(url)
+        }
     }
 
     return response

@@ -6,13 +6,50 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { FileText, MessageSquare, Target, TrendingUp, MessageCircle } from "lucide-react"
 import { useTranslations } from 'next-intl'
+import { createClient } from "@/utils/supabase/client"
+import { useEffect, useState } from "react"
+
+function WelcomeBanner() {
+    const [name, setName] = useState<string | null>(null)
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('full_name, email')
+                .eq('id', user.id)
+                .single()
+            setName(profile?.full_name || profile?.email?.split('@')[0] || null)
+        }
+        fetchUser()
+    }, [])
+
+    if (!name) return null
+
+    const hour = new Date().getHours()
+    const greeting = hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối'
+
+    return (
+        <div className="mb-8">
+            <h1 className="text-3xl font-bold">
+                {greeting}, <span className="capitalize">{name}</span> 👋
+            </h1>
+            <p className="text-muted-foreground mt-1 text-sm">
+                Hôm nay bạn muốn phát triển sự nghiệp như thế nào?
+            </p>
+        </div>
+    )
+}
 
 export default function DashboardPage() {
     const t = useTranslations('Dashboard')
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
+            <WelcomeBanner />
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {/* Chat Interface Card */}
@@ -36,9 +73,7 @@ export default function DashboardPage() {
                             </div>
                             <CardTitle>{t('resumeAnalyzer')}</CardTitle>
                         </div>
-                        <CardDescription>
-                            {t('resumeAnalyzerDesc')}
-                        </CardDescription>
+                        <CardDescription>{t('resumeAnalyzerDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Button asChild className="w-full" variant="outline">
@@ -56,9 +91,7 @@ export default function DashboardPage() {
                             </div>
                             <CardTitle>{t('skillGapAnalysis')}</CardTitle>
                         </div>
-                        <CardDescription>
-                            {t('skillGapAnalysisDesc')}
-                        </CardDescription>
+                        <CardDescription>{t('skillGapAnalysisDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Button asChild className="w-full" variant="outline">
@@ -67,7 +100,7 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                {/* CV Improvement Studio Card */}
+                {/* CV Maker Card */}
                 <Card className="transition-all hover:shadow-lg hover:scale-[1.02]">
                     <CardHeader>
                         <div className="flex items-center gap-3">
@@ -76,9 +109,7 @@ export default function DashboardPage() {
                             </div>
                             <CardTitle>{t('aiCvMaker')}</CardTitle>
                         </div>
-                        <CardDescription>
-                            {t('aiCvMakerDesc')}
-                        </CardDescription>
+                        <CardDescription>{t('aiCvMakerDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Button asChild className="w-full" variant="outline">
@@ -96,9 +127,7 @@ export default function DashboardPage() {
                             </div>
                             <CardTitle>{t('interviewPrep')}</CardTitle>
                         </div>
-                        <CardDescription>
-                            {t('interviewPrepDesc')}
-                        </CardDescription>
+                        <CardDescription>{t('interviewPrepDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Button asChild className="w-full" variant="outline">
