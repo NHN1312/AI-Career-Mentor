@@ -37,7 +37,7 @@ export default function AdminUsersChart({ data }: Props) {
                         fontSize: '13px',
                     }}
                     labelStyle={{ fontWeight: 600 }}
-                    formatter={(value: number) => [value, 'Users mới']}
+                    formatter={(value: number | undefined) => [value ?? 0, 'Users mới']}
                 />
                 <Bar
                     dataKey="count"
